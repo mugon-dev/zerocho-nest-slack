@@ -5,6 +5,8 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "esModuleInterop": true,
+    // import * as React from 'react => * as 없어도 됨
     "allowSyntheticDefaultImports": true,
     "target": "es2017",
     "sourceMap": true,
