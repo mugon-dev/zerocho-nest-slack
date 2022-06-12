@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './common/filters/httpException.filter';
+import { ValidationPipe } from '@nestjs/common';
 
 declare const module: any;
 
@@ -10,6 +11,8 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   // filter
   app.useGlobalFilters(new HttpExceptionFilter());
+  // class-validation
+  app.useGlobalPipes(new ValidationPipe());
   // swagger 세팅
   const config = new DocumentBuilder()
     .setTitle('Sleact API')
