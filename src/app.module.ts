@@ -12,12 +12,20 @@ import config from './configs/typeorm.config';
 import { AuthModule } from './auth/auth.module';
 import { UsersService } from './users/users.service';
 import { Users } from './entities/Users.entity';
+import { Workspaces } from './entities/Workspaces.entity';
+import { WorkspaceMembers } from './entities/WorkspaceMembers.entity';
+import { ChannelMembers } from './entities/ChannelMembers.entity';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot(config),
-    TypeOrmModule.forFeature([Users]),
+    TypeOrmModule.forFeature([
+      Users,
+      Workspaces,
+      WorkspaceMembers,
+      ChannelMembers,
+    ]),
     AuthModule,
     UsersModule,
     ChannelsModule,
