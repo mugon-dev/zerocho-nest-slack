@@ -6,6 +6,7 @@ import { ChannelMembers } from '../entities/ChannelMembers.entity';
 import { Workspaces } from '../entities/Workspaces.entity';
 import { ChannelChats } from '../entities/ChannelChats.entity';
 import { Users } from '../entities/Users.entity';
+import { EventsGateway } from '../events/events.gateway';
 
 @Injectable()
 export class ChannelsService {
@@ -20,6 +21,7 @@ export class ChannelsService {
     private channelChatsRepository: Repository<ChannelChats>,
     @InjectRepository(Users)
     private usersRepository: Repository<Users>,
+    private eventsGateway: EventsGateway,
   ) {}
 
   async findById(id: number) {
@@ -128,7 +130,33 @@ export class ChannelsService {
       .getMany();
   }
 
-  async createWorkspaceChannelChats() {}
+  async createWorkspaceChannelChats(
+    url: string,
+    name: string,
+    content: string,
+    myId: number,
+  ) {
+    const channel = await this.channelsRepository
+      .createQueryBuilder('channel')
+      .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
+        url,
+      })
+      .where('channel.name = :name', { name })
+      .getOne();
+    const chats = new ChannelChats();
+    chats.content = content;
+    chats.UserId = myId;
+    chats.ChannelId = channel.id;
+    const savedChat = await this.channelChatsRepository.save(chats);
+    const chatWithUser = await this.channelChatsRepository.findOne({
+      where: { id: savedChat.id },
+      relations: ['User', 'Channel'],
+    });
+    this.eventsGateway.server
+      // .of(`/ws-${url}`)
+      .to(`/ws-${url}-${chatWithUser.ChannelId}`) // socket.io의 room 에 대응
+      .emit('message', chatWithUser);
+  }
 
   async createWorkspaceChannelImages() {}
 

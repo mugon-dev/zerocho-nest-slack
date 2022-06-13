@@ -7,7 +7,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ChannelsService } from './channels.service';
 import { User } from '../common/decorators/user.decorator';
 import { Users } from '../entities/Users.entity';
@@ -73,6 +73,7 @@ export class ChannelsController {
     );
   }
 
+  @ApiOperation({ summary: '워크스페이스 특정 채널 채팅 생성하기' })
   @Post(':url/channels/:name/chats')
   async createWorkspaceChannelChats(
     @Param('url') url,
@@ -80,7 +81,12 @@ export class ChannelsController {
     @Body('content') content,
     @User() user: Users,
   ) {
-    return this.channelsService.createWorkspaceChannelChats();
+    return this.channelsService.createWorkspaceChannelChats(
+      url,
+      name,
+      content,
+      user.id,
+    );
   }
 
   @Post(':url/channels/:name/images')

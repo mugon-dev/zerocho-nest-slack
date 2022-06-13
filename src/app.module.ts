@@ -15,6 +15,7 @@ import { Users } from './entities/Users.entity';
 import { Workspaces } from './entities/Workspaces.entity';
 import { WorkspaceMembers } from './entities/WorkspaceMembers.entity';
 import { ChannelMembers } from './entities/ChannelMembers.entity';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ChannelMembers } from './entities/ChannelMembers.entity';
     ChannelsModule,
     DmsModule,
     WorkspacesModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService, UsersService],
