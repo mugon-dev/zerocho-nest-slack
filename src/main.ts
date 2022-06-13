@@ -3,6 +3,9 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './common/filters/httpException.filter';
 import { ValidationPipe } from '@nestjs/common';
+import passport from 'passport';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
 
 declare const module: any;
 
@@ -23,6 +26,22 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   // /api 에 문서를 만들어줌
   SwaggerModule.setup('api', app, document);
+  // session 사용하기
+  app.use(cookieParser());
+  app.use(
+    session({
+      resave: false,
+      saveUninitialized: false,
+      secret: process.env.COOKIE_SECRET,
+      cookie: {
+        httpOnly: true,
+      },
+    }),
+  );
+  // passport
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   await app.listen(port);
   console.log(`listening on port ${port}`);
   if (module.hot) {

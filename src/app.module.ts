@@ -9,18 +9,23 @@ import { DmsModule } from './dms/dms.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import config from './configs/typeorm.config';
+import { AuthModule } from './auth/auth.module';
+import { UsersService } from './users/users.service';
+import { Users } from './entities/Users.entity';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot(config),
+    TypeOrmModule.forFeature([Users]),
+    AuthModule,
     UsersModule,
     ChannelsModule,
     DmsModule,
     WorkspacesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, UsersService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
