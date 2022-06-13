@@ -21,7 +21,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   // cors 세팅
   app.enableCors({
-    origin: process.env.NODE_ENV === 'production' ? [''] : true,
+    origin: process.env.NODE_ENV === 'production' ? ['192.168.0.117'] : true,
     credentials: true,
   });
   // static 폴더 경로
