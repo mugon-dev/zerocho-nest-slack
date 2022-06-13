@@ -158,7 +158,36 @@ export class ChannelsService {
       .emit('message', chatWithUser);
   }
 
-  async createWorkspaceChannelImages() {}
+  async createWorkspaceChannelImages(
+    url: string,
+    name: string,
+    files: Express.Multer.File[],
+    myId: number,
+  ) {
+    console.log(files);
+    const channel = await this.channelsRepository
+      .createQueryBuilder('channel')
+      .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
+        url,
+      })
+      .where('channel.name = :name', { name })
+      .getOne();
+    for (let i = 0; i < files.length; i++) {
+      const chats = new ChannelChats();
+      chats.content = files[i].path;
+      chats.UserId = myId;
+      chats.ChannelId = channel.id;
+      const savedChat = await this.channelChatsRepository.save(chats);
+      const chatWithUser = await this.channelChatsRepository.findOne({
+        where: { id: savedChat.id },
+        relations: ['User', 'Channel'],
+      });
+      this.eventsGateway.server
+        // .of(`/ws-${url}`)
+        .to(`/ws-${url}-${chatWithUser.ChannelId}`)
+        .emit('message', chatWithUser);
+    }
+  }
 
   async getChannelUnreadsCount(url, name, after) {
     const channel = await this.channelsRepository

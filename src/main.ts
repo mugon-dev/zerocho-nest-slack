@@ -6,16 +6,41 @@ import { ValidationPipe } from '@nestjs/common';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
+import path from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 declare const module: any;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // Express 에서만 사용하는 함수에 대해 TYPE 추론하기 위해 NestExpressApplication 사용
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const port = process.env.PORT || 3000;
   // filter
   app.useGlobalFilters(new HttpExceptionFilter());
   // class-validation
   app.useGlobalPipes(new ValidationPipe());
+  // cors 세팅
+  app.enableCors({
+    origin: process.env.NODE_ENV === 'production' ? [''] : true,
+    credentials: true,
+  });
+  // static 폴더 경로
+  app.useStaticAssets(
+    process.env.NODE_ENV === 'production'
+      ? path.join(__dirname, '..', '..', 'uploads')
+      : path.join(__dirname, '..', 'uploads'),
+    {
+      prefix: '/uploads',
+    },
+  );
+  app.useStaticAssets(
+    process.env.NODE_ENV === 'production'
+      ? path.join(__dirname, '..', '..', 'public')
+      : path.join(__dirname, '..', 'public'),
+    {
+      prefix: '/dist',
+    },
+  );
   // swagger 세팅
   const config = new DocumentBuilder()
     .setTitle('Sleact API')
