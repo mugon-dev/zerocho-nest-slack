@@ -1,11 +1,13 @@
 # Step 1
 ## base image for Step 1: Node 10
-FROM node:18 AS builder
+FROM node:18-alpine AS builder
 WORKDIR /app
 ## 프로젝트의 모든 파일을 WORKDIR(/app)로 복사한다
 COPY . .
 ## Nest.js project를 build 한다
+RUN apk add --no-cache python3 make g++
 RUN npm install
+RUN npm rebuild bcrypt --build-from-source
 RUN npm run build
 
 

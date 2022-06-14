@@ -28,7 +28,7 @@ const config: TypeOrmModuleOptions = {
     Workspaces,
   ],
   charset: 'utf8mb4',
-  synchronize: false,
+  synchronize: true,
   logging: true,
 };
 
