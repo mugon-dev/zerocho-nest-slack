@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channels } from '../entities/Channels.entity';
 import { MoreThan, Repository } from 'typeorm';
@@ -91,7 +91,7 @@ export class ChannelsService {
       .where('channel.name = :name', { name })
       .getOne();
     if (!channel) {
-      throw new NotFoundException('채널이 존재하지 않습니다.');
+      return null; // TODO: 이 때 어떻게 에러 발생?
     }
     const user = await this.usersRepository
       .createQueryBuilder('user')
@@ -101,7 +101,7 @@ export class ChannelsService {
       })
       .getOne();
     if (!user) {
-      throw new NotFoundException('사용자가 존재하지 않습니다.');
+      return null;
     }
     const channelMember = new ChannelMembers();
     channelMember.ChannelId = channel.id;
@@ -154,7 +154,7 @@ export class ChannelsService {
     });
     this.eventsGateway.server
       // .of(`/ws-${url}`)
-      .to(`/ws-${url}-${chatWithUser.ChannelId}`) // socket.io의 room 에 대응
+      .to(`/ws-${url}-${chatWithUser.ChannelId}`)
       .emit('message', chatWithUser);
   }
 

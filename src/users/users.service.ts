@@ -17,10 +17,6 @@ export class UsersService {
     private dataSource: DataSource,
   ) {}
 
-  async getUser(email: string) {
-    const user = await this.usersRepository.findOne({ where: { email } });
-  }
-
   async findByEmail(email: string) {
     return this.usersRepository.findOne({
       where: { email },
@@ -54,6 +50,7 @@ export class UsersService {
         ChannelId: 1,
       });
       await queryRunner.commitTransaction();
+      return true;
     } catch (e) {
       await queryRunner.rollbackTransaction();
     } finally {
